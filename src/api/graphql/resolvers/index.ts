@@ -1,0 +1,1 @@
+export { helloWorldResolver } from "./hello-world.resolver";
