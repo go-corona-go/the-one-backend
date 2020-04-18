@@ -10,6 +10,7 @@ interface FileUploadInput extends Omit<FileUpload, "createReadStream"> {
 interface FileUploadAzureResponse {
   filename: string;
   link: string;
+  lastModified: Date;
 }
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
@@ -58,9 +59,11 @@ async function uploadFileToAzure(file: FileUploadInput): Promise<FileUploadAzure
         blobContentType: file.mimetype
       }
     });
+  // console.log("response: ", uploadFileResponse);
   return {
     filename: newFileName,
-    link: uploadFileResponse.clientRequestId
+    link: azureUploadClient.url,
+    lastModified: uploadFileResponse.lastModified
   };
 }
 
