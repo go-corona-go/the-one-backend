@@ -1,1 +1,1 @@
-export { typeDefs } from "./schema";
+export { schema } from "./schema";

@@ -1,2 +1,2 @@
-export { helloWorldResolver } from "./resolvers";
-export { typeDefs } from "./schema"
+export { helloWorldResolver, fileUploadResolver } from "./resolvers";
+export { schema } from "./schema"
