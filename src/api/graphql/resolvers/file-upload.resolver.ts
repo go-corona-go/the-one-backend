@@ -1,54 +1,76 @@
 import { FileUpload } from "graphql-upload";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { v1 as generateUUID } from "uuid";
+import { Readable } from "stream";
 
+interface FileUploadInput extends Omit<FileUpload, "createReadStream"> {
+  stream: Readable
+}
 
-const AZURE_STORAGE_CONNECTION_STRING = "";
+interface FileUploadAzureResponse {
+  filename: string;
+  link: string;
+}
+
+const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
+const AZURE_STORAGE_CONTAINER_NAME = "wfto-covid19-images";
+
+const ONE_MB = 1024 * 1024;
+const uploadOptions = {
+  bufferSize: 5 * ONE_MB,
+  maxConcurrency: 5
+};
+
 export const fileUploadResolver = {
   Mutation: {
-    async uploadFile(parent, { file }: { file: Promise<FileUpload> }) {
+    async uploadFile(_parent, { file }: { file: Promise<FileUpload> }) {
+      // 1. TODO - Validate file metadata.
       const { createReadStream, filename, mimetype, encoding } = await file;
       const stream = createReadStream();
 
-      const uploadClient = await getAzureUploadClient(filename);
-      const uploadFileResponse = await uploadClient.uploadStream(stream);
-
-      console.log("File was uploaded successfully. requestId: ", uploadFileResponse.requestId);
-
-      // 1. Validate file metadata.
-
-      // 2. Stream file contents into cloud storage:
-      // https://nodejs.org/api/stream.html
-
-      // 3. Record the file upload in your DB.
+      const uploadFileResponse = await uploadFileToAzure({
+        filename,
+        mimetype,
+        encoding,
+        stream
+      })
+      
+      // 2. Record the file upload in your DB.
       // const id = await recordFile( … )
 
-      return { filename, mimetype, encoding };
+      return uploadFileResponse;
     }
   },
 }
 
-async function getAzureUploadClient(fileName: string) {
+async function uploadFileToAzure(file: FileUploadInput): Promise<FileUploadAzureResponse> {
   const uniqueId = generateUUID();
-  const newFileName = `${uniqueId}-${fileName}`;
+  const newFileName = `${uniqueId}-${file.filename}`;
+  const azureUploadClient = await getAzureUploadClient(newFileName);
+
+  const uploadFileResponse = await azureUploadClient.uploadStream(
+    file.stream,
+    uploadOptions.bufferSize,
+    uploadOptions.maxConcurrency,
+    {
+      blobHTTPHeaders: {
+        blobContentEncoding: file.encoding,
+        blobContentType: file.mimetype
+      }
+    });
+  return {
+    filename: newFileName,
+    link: uploadFileResponse.clientRequestId
+  };
+}
+
+async function getAzureUploadClient(fileName: string) {
+  
   // Create the BlobServiceClient object which will be used to create a container client
   const blobServiceClient = await BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
-  const containerName = "wfto-covid19-images";
   // Get a reference to a container
-  const containerClient = await blobServiceClient.getContainerClient(containerName);
-
-  const blockBlobClient = containerClient.getBlockBlobClient(newFileName);
-
-  // console.log('\nUploading to Azure storage as blob:\n\t');
-  // // Upload data to the blob
-  // const data = 'Hello, World!';
-  // const uploadBlobResponse = await blockBlobClient.upload(data, data.length);
-  // console.log("Blob was uploaded successfully. requestId: ", uploadBlobResponse.requestId);
-
+  const storageContainer = await blobServiceClient.getContainerClient(AZURE_STORAGE_CONTAINER_NAME);
+  // Blob client is used to upload blob/file to the server
+  const blockBlobClient = storageContainer.getBlockBlobClient(fileName);
   return blockBlobClient;
-  // console.log('\nListing blobs...');
-  // // List the blob(s) in the container.
-  // for await (const blob of containerClient.listBlobsFlat()) {
-  //     console.log('\t', blob.name);
-  // }
 }
