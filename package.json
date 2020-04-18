@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "tsc": "tsc",
-    "build": "tsc",
+    "build": "npm run tsc",
     "watch": "tsc -w",
     "prestart": "npm run build",
     "start": "ts-node ./src/index.ts",
