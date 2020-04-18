@@ -1,21 +1,13 @@
-import { AzureFunction } from "@azure/functions"
+import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { ApolloServer } from "apollo-server-azure-functions";
-import { helloWorldResolver, typeDefs } from "../src/api/graphql";
+import { schema } from "../src/api/graphql";
 
 
-const server = new ApolloServer({
-    typeDefs,
-    resolvers: [
-        helloWorldResolver
-    ],
-});
 
-const httpTrigger: AzureFunction = server.createHandler({
-    cors: {
-        origin: '*',
-        credentials: true,
-        allowedHeaders: 'Content-Type, Authorization'
-    },
-});
+const server = new ApolloServer({schema});
 
+const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
+    context.log('HTTP trigger function processed a request.', req);
+    server.createHandler()(context, req);
+}
 export default httpTrigger;
