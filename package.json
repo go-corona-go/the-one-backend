@@ -4,9 +4,8 @@
   "description": "",
   "scripts": {
     "tsc": "tsc",
-    "build": "npm run tsc",
+    "postinstall": "npm run tsc",
     "watch": "tsc -w",
-    "prestart": "npm run build",
     "start": "ts-node ./src/index.ts",
     "test": "echo \"No tests yet...\""
   },
