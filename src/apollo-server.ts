@@ -10,4 +10,6 @@ export const apolloServer = new ApolloServer({
     // https://github.com/jaydenseric/graphql-upload#type-processrequestoptions
     maxFileSize: 10000000, // 10 MB
     maxFiles: 20,
-  }});
+  },
+  introspection: true
+});
