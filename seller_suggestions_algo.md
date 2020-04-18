@@ -38,10 +38,12 @@
 
 5. If even after step 4, the local sellers are not able to fulfill the order, the remaining units(order units - units from local sellers) need to be fulfilled by a large foriegn seller. We will select a single foreign seller whose capacity > remaining and is closest to the buyer based on distance(store lat/long for each seller and buyer).
 
-6. Now pick the item with second most units. 
-    1. Here first check the number of units which can be availed from the local buyers chosen in step 4. 
-    2. Run the Steps 2-5 again for item 2. If foreign seller is again needed first check if seller in Step 5 meets the need. If yes choose him, else repeat step 5 to find a new buyer.
+6. If the sellers capacity is still not able to meet either do not give any seller or apart from the ones choosen above, give other local sellers randomly with whom capacity can be met.
 
-7. Similarly keep picking the items and applying Steps 2-6.
-8. After we have list of all the sellers for each item, that becomes are candidate set for our order.
-9. This list should already be optimized as we already consider seller of a previous item in next item.
+7. Now pick the item with second most units. 
+    1. Here first check the number of units which can be availed from the local sellers chosen in step 4. 
+    2. Run the Steps 2-5 again for item 2. If foreign seller is again needed first check if seller in Step 5 meets the need. If yes choose him, else repeat step 5 to find a new seller.
+
+8. Similarly keep picking the items and applying Steps 2-6.
+9. After we have list of all the sellers for each item, that becomes are candidate set for our order.
+10. This list should already be optimized as we already consider seller of a previous item in next item.
