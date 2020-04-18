@@ -6,7 +6,7 @@
     "tsc": "tsc",
     "postinstall": "npm run tsc",
     "watch": "tsc -w",
-    "start": "ts-node ./src/index.ts",
+    "start": "node ./dist/src/index.js",
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
