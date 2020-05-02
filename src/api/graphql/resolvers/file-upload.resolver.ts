@@ -11,7 +11,7 @@ export const fileUploadResolver = {
       { file }: { file: Promise<FileUpload> },
       { fileUploadService }: { fileUploadService: FileUploadService }
     ): Promise<FileUploadResponse> {
-      // 1. TODO - Validate file metadata.
+      // 1. TODO - Validate file metadata, like only support jpg/png file types
       const { createReadStream, filename, mimetype, encoding } = await file;
       const stream = createReadStream();
 
