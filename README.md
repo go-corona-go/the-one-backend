@@ -31,7 +31,7 @@ To run the server in debug mode, launch your server from vscode debug launcher u
 Note: Make sure you set all the env variables in your .env file
 
 ### Set environment variables
-Set below environment variables in a .env file at the root as shown in the [].env.example]() file
+Set below environment variables in a .env file at the root, as shown in the [.env.example](.env.example) file
 - PORT
 - AZURE_STORAGE_CONNECTION_STRING `(To upload the file blob on azure)`
 

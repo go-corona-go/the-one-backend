@@ -7,7 +7,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Start the server in debug mode",
       "skipFiles": [
         "<node_internals>/**"
       ],
@@ -16,9 +16,7 @@
       "outFiles": [
         "${workspaceFolder}/dist/**/*.js"
       ],
-      "env": {
-        "AZURE_STORAGE_CONNECTION_STRING": ""
-      }
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }
