@@ -26,17 +26,26 @@ const uploadOptions = {
 async function getAzureUploadClient(
   fileName: string
 ): Promise<BlockBlobClient> {
-  // Create the BlobServiceClient object which will be used to create a container client
-  const blobServiceClient = await BlobServiceClient.fromConnectionString(
-    AZURE_STORAGE_CONNECTION_STRING
-  );
-  // Get a reference to a container
-  const storageContainer = await blobServiceClient.getContainerClient(
-    AZURE_STORAGE_CONTAINER_NAME
-  );
-  // Blob client is used to upload blob/file to the server
-  const blockBlobClient = storageContainer.getBlockBlobClient(fileName);
-  return blockBlobClient;
+  try {
+    // Create the BlobServiceClient object which will be used to create a container client
+    const blobServiceClient = await BlobServiceClient.fromConnectionString(
+      AZURE_STORAGE_CONNECTION_STRING
+    );
+    // Get a reference to a container
+    const storageContainer = await blobServiceClient.getContainerClient(
+      AZURE_STORAGE_CONTAINER_NAME
+    );
+    // Blob client is used to upload blob/file to the server
+    const blockBlobClient = storageContainer.getBlockBlobClient(fileName);
+    return blockBlobClient;
+  } catch (error) {
+    console.error(error);
+    const newError = new Error(
+      `Error occured while initialising the azure client - ${error.message}`
+    );
+    newError.name = 'AZURE_INIT_ERROR';
+    throw newError;
+  }
 }
 
 async function uploadFileToAzure(
