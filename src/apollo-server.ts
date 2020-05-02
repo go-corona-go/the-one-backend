@@ -1,5 +1,5 @@
-import { ApolloServer } from "apollo-server-express";
-import { schema } from "./api/graphql/schema";
+import { ApolloServer } from 'apollo-server-express';
+import { schema } from './api/graphql/schema';
 
 export const apolloServer = new ApolloServer({
   schema,
@@ -9,7 +9,7 @@ export const apolloServer = new ApolloServer({
     // graphql-upload:
     // https://github.com/jaydenseric/graphql-upload#type-processrequestoptions
     maxFileSize: 10000000, // 10 MB
-    maxFiles: 20,
+    maxFiles: 20
   },
   introspection: true
 });

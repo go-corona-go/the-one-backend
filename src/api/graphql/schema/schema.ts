@@ -1,6 +1,6 @@
-import gql from "graphql-tag";
-import { makeExecutableSchema } from "apollo-server";
-import { fileUploadResolver, helloWorldResolver } from "../resolvers";
+import gql from 'graphql-tag';
+import { makeExecutableSchema } from 'apollo-server';
+import { fileUploadResolver, helloWorldResolver } from '../resolvers';
 
 const typeDefs = gql`
   scalar Upload
@@ -10,7 +10,7 @@ const typeDefs = gql`
     lastModified: ID!
   }
   type Query {
-    hello:  String
+    hello: String
   }
   type Mutation {
     uploadFile(file: Upload!): File!
@@ -19,8 +19,5 @@ const typeDefs = gql`
 
 export const schema = makeExecutableSchema({
   typeDefs,
-  resolvers: [
-      helloWorldResolver,
-      fileUploadResolver
-  ]
+  resolvers: [helloWorldResolver, fileUploadResolver]
 });
