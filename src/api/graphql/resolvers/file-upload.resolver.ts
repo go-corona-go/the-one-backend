@@ -23,22 +23,6 @@ const uploadOptions = {
   maxConcurrency: 5
 };
 
-async function getAzureUploadClient(
-  fileName: string
-): Promise<BlockBlobClient> {
-  // Create the BlobServiceClient object which will be used to create a container client
-  const blobServiceClient = await BlobServiceClient.fromConnectionString(
-    AZURE_STORAGE_CONNECTION_STRING
-  );
-  // Get a reference to a container
-  const storageContainer = await blobServiceClient.getContainerClient(
-    AZURE_STORAGE_CONTAINER_NAME
-  );
-  // Blob client is used to upload blob/file to the server
-  const blockBlobClient = storageContainer.getBlockBlobClient(fileName);
-  return blockBlobClient;
-}
-
 async function uploadFileToAzure(
   file: FileUploadInput
 ): Promise<FileUploadAzureResponse> {
@@ -89,3 +73,19 @@ export const fileUploadResolver = {
     }
   }
 };
+
+async function getAzureUploadClient(
+  fileName: string
+): Promise<BlockBlobClient> {
+  // Create the BlobServiceClient object which will be used to create a container client
+  const blobServiceClient = await BlobServiceClient.fromConnectionString(
+    AZURE_STORAGE_CONNECTION_STRING
+  );
+  // Get a reference to a container
+  const storageContainer = await blobServiceClient.getContainerClient(
+    AZURE_STORAGE_CONTAINER_NAME
+  );
+  // Blob client is used to upload blob/file to the server
+  const blockBlobClient = storageContainer.getBlockBlobClient(fileName);
+  return blockBlobClient;
+}
