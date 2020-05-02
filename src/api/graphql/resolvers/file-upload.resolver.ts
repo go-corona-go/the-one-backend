@@ -1,95 +1,28 @@
 import { FileUpload } from 'graphql-upload';
-import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
-import { v1 as generateUUID } from 'uuid';
-import { Readable } from 'stream';
-
-interface FileUploadInput extends Omit<FileUpload, 'createReadStream'> {
-  stream: Readable;
-}
-
-interface FileUploadAzureResponse {
-  filename: string;
-  link: string;
-  lastModified: Date;
-}
-
-const AZURE_STORAGE_CONNECTION_STRING =
-  process.env.AZURE_STORAGE_CONNECTION_STRING || '';
-const AZURE_STORAGE_CONTAINER_NAME = 'wfto-covid19-images';
-
-const ONE_MB = 1024 * 1024;
-const uploadOptions = {
-  bufferSize: 5 * ONE_MB,
-  maxConcurrency: 5
-};
-
-function getAzureUploadClient(fileName: string): BlockBlobClient {
-  try {
-    // Create the BlobServiceClient object which will be used to create a container client
-    const blobServiceClient = BlobServiceClient.fromConnectionString(
-      AZURE_STORAGE_CONNECTION_STRING
-    );
-    // Get a reference to a container
-    const storageContainer = blobServiceClient.getContainerClient(
-      AZURE_STORAGE_CONTAINER_NAME
-    );
-    // Blob client is used to upload blob/file to the server
-    const blockBlobClient = storageContainer.getBlockBlobClient(fileName);
-    return blockBlobClient;
-  } catch (error) {
-    console.error(error);
-    const newError = new Error(
-      `Error occured while initialising the azure client - ${error.message}`
-    );
-    newError.name = 'AZURE_INIT_ERROR';
-    throw newError;
-  }
-}
-
-async function uploadFileToAzure(
-  file: FileUploadInput
-): Promise<FileUploadAzureResponse> {
-  const uniqueId = generateUUID();
-  const newFileName = `${uniqueId}-${file.filename}`;
-  const azureUploadClient = getAzureUploadClient(newFileName);
-
-  const uploadFileResponse = await azureUploadClient.uploadStream(
-    file.stream,
-    uploadOptions.bufferSize,
-    uploadOptions.maxConcurrency,
-    {
-      blobHTTPHeaders: {
-        blobContentEncoding: file.encoding,
-        blobContentType: file.mimetype
-      }
-    }
-  );
-  // console.log("response: ", uploadFileResponse);
-  return {
-    filename: newFileName,
-    link: azureUploadClient.url,
-    lastModified: uploadFileResponse.lastModified
-  };
-}
+import {
+  FileUploadService,
+  FileUploadResponse
+} from '../../../services/file-upload-service';
 
 export const fileUploadResolver = {
   Mutation: {
     async uploadFile(
       _parent,
-      { file }: { file: Promise<FileUpload> }
-    ): Promise<FileUploadAzureResponse> {
+      { file }: { file: Promise<FileUpload> },
+      { fileUploadService }: { fileUploadService: FileUploadService }
+    ): Promise<FileUploadResponse> {
       // 1. TODO - Validate file metadata.
       const { createReadStream, filename, mimetype, encoding } = await file;
       const stream = createReadStream();
 
-      const uploadFileResponse = await uploadFileToAzure({
+      const uploadFileResponse = await fileUploadService.uploadFile({
         filename,
         mimetype,
         encoding,
         stream
       });
 
-      // 2. Record the file upload in your DB.
+      // 2. Record the file upload in DB.
       // const id = await recordFile( … )
 
       return uploadFileResponse;
