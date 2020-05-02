@@ -25,6 +25,17 @@ http://localhost:5001/api/graphql
 http://localhost:5001/api/{rest-endpoint}
 ```
 
+### Debug in local
+To run the server in debug mode, launch your server from vscode debug launcher using `Start the server in debug mode` launcher
+
+Note: Make sure you set all the env variables in your .env file
+
+### Set environment variables
+Set below environment variables in a .env file at the root as shown in the [].env.example]() file
+- PORT
+- AZURE_STORAGE_CONNECTION_STRING `(To upload the file blob on azure)`
+
+
 ## Deploy to heroku
 Note: First, install the [heroku-cli](https://devcenter.heroku.com/articles/heroku-cli)
 
@@ -53,8 +64,8 @@ cd <app-name>
 
 ### Set environment variables 
 App => Settings => config vars
-- PORT
-- AZURE_STORAGE_CONNECTION_STRING `(To upload the file blob on azure)`
+Add all the env variables you're using in your local to the heroku app
+
 
 ## Contributing to the repo
 - Try to use as much typescript as possible (Though you have the option to write plain javascipt as well in .ts files)
@@ -65,6 +76,7 @@ App => Settings => config vars
   - Create the controller with the business logic
   - Map the controller methods to the specific endpoint & HTTP method in `routers`
   - Map the router in `rest-router.ts`
+- All the services used either in the REST or the GrpahQL flow, should be put under `services` folder
 
 ### Repo structure
 Follow this structure while adding your code to this repo
@@ -75,3 +87,4 @@ Follow this structure while adding your code to this repo
   - rest
     - controllers (endpoint controllers)
     - routers (map the rest endpoints with the controller methods)
+- services
