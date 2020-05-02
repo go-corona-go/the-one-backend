@@ -24,24 +24,32 @@ export class FileUploadService {
     const newFileName = `${uniqueId}-${file.filename}`;
     // TO make sure there is no file name conflict
     const azureUploadClient = this._getAzureUploadClient(newFileName);
-
-    const uploadFileResponse = await azureUploadClient.uploadStream(
-      file.stream,
-      uploadOptions.bufferSize,
-      uploadOptions.maxConcurrency,
-      {
-        blobHTTPHeaders: {
-          blobContentEncoding: file.encoding,
-          blobContentType: file.mimetype
+    try {
+      const uploadFileResponse = await azureUploadClient.uploadStream(
+        file.stream,
+        uploadOptions.bufferSize,
+        uploadOptions.maxConcurrency,
+        {
+          blobHTTPHeaders: {
+            blobContentEncoding: file.encoding,
+            blobContentType: file.mimetype
+          }
         }
-      }
-    );
-    // console.log("response: ", uploadFileResponse);
-    return {
-      filename: newFileName,
-      link: azureUploadClient.url,
-      lastModified: uploadFileResponse.lastModified
-    };
+      );
+      // console.log("response: ", uploadFileResponse);
+      return {
+        filename: newFileName,
+        link: azureUploadClient.url,
+        lastModified: uploadFileResponse.lastModified
+      };
+    } catch (error) {
+      console.error(error);
+      const newError = new Error(
+        `Error occured while uploading stream to the storage - ${error.message}`
+      );
+      newError.name = 'AZURE_STREAM_UPLOAD_ERROR';
+      throw newError;
+    }
   }
 
   private _getAzureUploadClient(fileName: string): BlockBlobClient {
