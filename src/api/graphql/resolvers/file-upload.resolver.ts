@@ -1,5 +1,5 @@
 import { FileUpload } from 'graphql-upload';
-import { BlobServiceClient } from '@azure/storage-blob';
+import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
 import { v1 as generateUUID } from 'uuid';
 import { Readable } from 'stream';
 
@@ -23,7 +23,9 @@ const uploadOptions = {
   maxConcurrency: 5
 };
 
-async function getAzureUploadClient(fileName: string) {
+async function getAzureUploadClient(
+  fileName: string
+): Promise<BlockBlobClient> {
   // Create the BlobServiceClient object which will be used to create a container client
   const blobServiceClient = await BlobServiceClient.fromConnectionString(
     AZURE_STORAGE_CONNECTION_STRING
@@ -65,7 +67,10 @@ async function uploadFileToAzure(
 
 export const fileUploadResolver = {
   Mutation: {
-    async uploadFile(_parent, { file }: { file: Promise<FileUpload> }) {
+    async uploadFile(
+      _parent,
+      { file }: { file: Promise<FileUpload> }
+    ): Promise<FileUploadAzureResponse> {
       // 1. TODO - Validate file metadata.
       const { createReadStream, filename, mimetype, encoding } = await file;
       const stream = createReadStream();
