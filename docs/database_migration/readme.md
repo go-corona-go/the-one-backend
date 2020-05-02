@@ -2,7 +2,7 @@
 - We already have a schema of the databse with name **up.sql** in same folder. This can be used unless there is no change is schema and up.sql is not updated with it.
 - To setup migration from command line [Hasura Cli](https://hasura.io/docs/1.0/graphql/manual/hasura-cli/install-hasura-cli.html#install-hasura-cli) needs to be installed
 - Steps mentioned below are taken from [Hasura migration docs](https://hasura.io/docs/1.0/graphql/manual/migrations/config-v1/manage-migrations.html#manage-migrations-v1). Adding the steps below explicitly incase site gets update with newer version of docs. This can be taken as reference as tested way to migrate database schema.
-1. `hasura init --directory my-project --endpoint <hasura-server-endpoint>` where `<hasura-server-endpoint>` looks like *https://wfto-covid19-dev.herokuapp.com/* in this case.
+1. `hasura init --directory my-project --endpoint <hasura-server-endpoint>` where `<hasura-server-endpoint>` is the url to existing hasura server from which you want to migrate your databse it looks like *https://wfto-covid19-dev.herokuapp.com/* in this case.
 2. `cd my-project`
 3. `hasura migrate create "init" --from-server`. This step outputs a version please note it down, it will be reuired in next step.
 4. `hasura migrate apply --version "<version>" --skip-execution` version in this case is the one we noted in step above.
