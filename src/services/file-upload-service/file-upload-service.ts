@@ -12,8 +12,6 @@ import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
 import { v1 as generateUUID } from 'uuid';
 
 export class FileUploadService {
-  constructor() {}
-
   public async uploadFile(file: FileUploadArg): Promise<FileUploadResponse> {
     const response = this._uploadFileToAzureBlob(file);
     return response;
