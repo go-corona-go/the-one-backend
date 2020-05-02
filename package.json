@@ -32,5 +32,15 @@
   },
   "engines": {
     "node": "12.x"
+  },
+  "husky": {
+    "hooks": {
+        "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+        "eslint --fix"
+    ]
   }
 }
