@@ -14,7 +14,7 @@ interface FileUploadAzureResponse {
 }
 
 const AZURE_STORAGE_CONNECTION_STRING =
-  process.env.AZURE_STORAGE_CONNECTION_STRING;
+  process.env.AZURE_STORAGE_CONNECTION_STRING || '';
 const AZURE_STORAGE_CONTAINER_NAME = 'wfto-covid19-images';
 
 const ONE_MB = 1024 * 1024;
@@ -23,16 +23,14 @@ const uploadOptions = {
   maxConcurrency: 5
 };
 
-async function getAzureUploadClient(
-  fileName: string
-): Promise<BlockBlobClient> {
+function getAzureUploadClient(fileName: string): BlockBlobClient {
   try {
     // Create the BlobServiceClient object which will be used to create a container client
-    const blobServiceClient = await BlobServiceClient.fromConnectionString(
+    const blobServiceClient = BlobServiceClient.fromConnectionString(
       AZURE_STORAGE_CONNECTION_STRING
     );
     // Get a reference to a container
-    const storageContainer = await blobServiceClient.getContainerClient(
+    const storageContainer = blobServiceClient.getContainerClient(
       AZURE_STORAGE_CONTAINER_NAME
     );
     // Blob client is used to upload blob/file to the server
@@ -53,7 +51,7 @@ async function uploadFileToAzure(
 ): Promise<FileUploadAzureResponse> {
   const uniqueId = generateUUID();
   const newFileName = `${uniqueId}-${file.filename}`;
-  const azureUploadClient = await getAzureUploadClient(newFileName);
+  const azureUploadClient = getAzureUploadClient(newFileName);
 
   const uploadFileResponse = await azureUploadClient.uploadStream(
     file.stream,
