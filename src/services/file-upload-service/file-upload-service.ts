@@ -3,11 +3,7 @@ import {
   FileUploadAzureResponse,
   FileUploadResponse
 } from './file-upload-service.interface';
-import {
-  AZURE_STORAGE_CONNECTION_STRING,
-  AZURE_STORAGE_CONTAINER_NAME,
-  uploadOptions
-} from './constants';
+import { uploadOptions, getAzureKeys } from './constants';
 import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
 import { v1 as generateUUID } from 'uuid';
 
@@ -54,6 +50,10 @@ export class FileUploadService {
 
   private _getAzureUploadClient(fileName: string): BlockBlobClient {
     try {
+      const {
+        AZURE_STORAGE_CONNECTION_STRING,
+        AZURE_STORAGE_CONTAINER_NAME
+      } = getAzureKeys();
       // Create the BlobServiceClient object which will be used to create a container client
       const blobServiceClient = BlobServiceClient.fromConnectionString(
         AZURE_STORAGE_CONNECTION_STRING
